@@ -2,47 +2,197 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Digital Pledge Form</title>
+
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
   <script src="firebase.js"></script>
+
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      text-align: center;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 400px;
+      margin: 20px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: #555;
+      margin-top: 0;
+    }
+
+    input {
+      width: 90%;
+      max-width: 300px;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    canvas {
+      display: block;
+      margin: 15px auto;
+      border: 1px solid #999;
+      border-radius: 8px;
+      background: white;
+      width: 100%;
+      max-width: 320px;
+      height: 160px;
+      touch-action: none; /* Important for mobile touch drawing */
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .clear-btn {
+      background: #ccc;
+      color: #000;
+    }
+
+    .submit-btn {
+      background: #2e7d32;
+      color: white;
+    }
+  </style>
 </head>
-<body style="font-family:sans-serif; text-align:center; background:#f4f6f8;">
-  <h2>Digital Pledge</h2>
-  <p>Enter your name and sign below:</p>
-  <input id="name" placeholder="Your Name" style="padding:8px; width:220px;"><br><br>
-  
-  <canvas id="sigCanvas" width="250" height="100" style="border:1px solid #999; background:white;"></canvas><br>
-  <button onclick="clearSig()">Clear</button><br><br>
-  
-  <button onclick="submitPledge()" style="padding:10px 25px; font-size:16px;">Submit Pledge</button>
+
+<body>
+  <div class="container">
+    <h2>Digital Pledge</h2>
+    <p>Enter your name and sign below:</p>
+
+    <input id="name" placeholder="Your Name"><br><br>
+
+    <canvas id="sigCanvas"></canvas>
+
+    <button class="clear-btn" onclick="clearSig()">Clear</button><br>
+    <button class="submit-btn" onclick="submitPledge()">Submit Pledge</button>
+  </div>
 
   <script>
     const canvas = document.getElementById("sigCanvas");
     const ctx = canvas.getContext("2d");
     let drawing = false;
 
-    canvas.addEventListener("mousedown", () => drawing = true);
-    canvas.addEventListener("mouseup", () => drawing = false);
-    canvas.addEventListener("mousemove", draw);
-    function draw(e){
-      if(!drawing) return;
+    // Adjust for screen size
+    function resizeCanvas() {
+      const data = canvas.toDataURL();
+      canvas.width = canvas.offsetWidth;
+      canvas.height = 160;
+      const img = new Image();
+      img.src = data;
+      img.onload = () => ctx.drawImage(img, 0, 0);
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    // Helper for getting correct position (for both touch and mouse)
+    function getPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      if (e.touches && e.touches[0]) {
+        return {
+          x: e.touches[0].clientX - rect.left,
+          y: e.touches[0].clientY - rect.top
+        };
+      } else {
+        return {
+          x: e.clientX - rect.left,
+          y: e.clientY - rect.top
+        };
+      }
+    }
+
+    // Drawing logic
+    function startDraw(e) {
+      e.preventDefault();
+      drawing = true;
+      const pos = getPos(e);
+      ctx.beginPath();
+      ctx.moveTo(pos.x, pos.y);
+    }
+
+    function draw(e) {
+      if (!drawing) return;
+      e.preventDefault();
+      const pos = getPos(e);
       ctx.lineWidth = 2;
       ctx.lineCap = "round";
       ctx.strokeStyle = "black";
-      ctx.lineTo(e.offsetX, e.offsetY);
+      ctx.lineTo(pos.x, pos.y);
       ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(e.offsetX, e.offsetY);
     }
 
-    function clearSig(){ ctx.clearRect(0,0,canvas.width,canvas.height); }
+    function endDraw(e) {
+      e.preventDefault();
+      drawing = false;
+      ctx.beginPath();
+    }
 
-    function submitPledge(){
+    // Mouse events
+    canvas.addEventListener("mousedown", startDraw);
+    canvas.addEventListener("mousemove", draw);
+    canvas.addEventListener("mouseup", endDraw);
+
+    // Touch events
+    canvas.addEventListener("touchstart", startDraw);
+    canvas.addEventListener("touchmove", draw);
+    canvas.addEventListener("touchend", endDraw);
+
+    function clearSig() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function isCanvasBlank(cnv) {
+      const blank = document.createElement("canvas");
+      blank.width = cnv.width;
+      blank.height = cnv.height;
+      return cnv.toDataURL() === blank.toDataURL();
+    }
+
+    function submitPledge() {
       const name = document.getElementById("name").value.trim();
+      if (!name) {
+        alert("⚠️ Please enter your name.");
+        return;
+      }
+      if (isCanvasBlank(canvas)) {
+        alert("⚠️ Please provide your signature before submitting.");
+        return;
+      }
+
       const sigData = canvas.toDataURL();
-      if(!name){ alert("Please enter your name."); return; }
-      db.ref("pledges").push({ name, signature: sigData, time: Date.now() });
+
+      // Push to Firebase (ensure firebase.js is configured)
+      db.ref("pledges").push({
+        name,
+        signature: sigData,
+        time: Date.now()
+      });
+
       alert("✅ Thank you for your digital pledge!");
       clearSig();
       document.getElementById("name").value = "";
