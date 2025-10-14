@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -18,6 +18,40 @@
       padding: 0;
     }
 
+    /* ===== HEADER ===== */
+    header {
+      background-color: #0066cc;
+      color: white;
+      padding: 15px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      text-align: center;
+    }
+
+    header img {
+      height: 125px;
+      width: auto;
+      margin-right: 15px;
+    }
+
+    .header-text {
+      text-align: left;
+    }
+
+    .header-text h1 {
+      font-size: 22px;
+      margin: 5px 0;
+      font-weight: 600;
+    }
+
+    .header-text p {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    /* ===== FORM CONTAINER ===== */
     .container {
       max-width: 400px;
       margin: 20px auto;
@@ -32,8 +66,13 @@
       margin-bottom: 10px;
     }
 
+    h3 {
+      font-size: 15px;
+      color: #444;
+      font-weight: 500;
+    }
+
     p {
-      color: #555;
       margin-top: 0;
     }
 
@@ -55,7 +94,7 @@
       width: 100%;
       max-width: 320px;
       height: 160px;
-      touch-action: none; /* Important for mobile touch drawing */
+      touch-action: none;
     }
 
     button {
@@ -76,53 +115,91 @@
       background: #2e7d32;
       color: white;
     }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background-color: #f2f2f2;
+      color: #333;
+      text-align: center;
+      padding: 15px 10px;
+      font-size: 14px;
+      border-top: 1px solid #ddd;
+    }
+
+    footer a {
+      color: #0066cc;
+      text-decoration: none;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+      header {
+        flex-direction: column;
+      }
+      header img {
+        margin: 0 0 10px 0;
+      }
+      .header-text {
+        text-align: center;
+      }
+    }
   </style>
 </head>
 
 <body>
-  <div class="container">
-    <h2>Digital Pledge</h2>
-    <p>Enter your name and sign below:</p>
+  <!-- HEADER WITH LEFT LOGO AND CENTERED TEXT -->
+  <header>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Seal_of_Uttarakhand.svg/492px-Seal_of_Uttarakhand.svg.png?20220920040554" alt="District Logo">
+    <div class="header-text">
+      <h1>जिला प्रशासन चम्पावत</h1>
+      <p>डिजिटल प्रतिज्ञा पहल</p>
+    </div>
+  </header>
 
-    <input id="name" placeholder="Your Name"><br><br>
+  <div class="container">
+    <h2>डिजिटल संकल्प</h2>
+    <h3>
+      मैं संकल्प लेता हूँ कि आत्मनिर्भर भारत के निर्माण में नशामुक्त, 
+      स्वच्छ और जल-संरक्षित समाज के लिए तन, मन और कर्म से अपना योगदान दूँगा।
+    </h3>
+    <p>नीचे अपना नाम और हस्ताक्षर दर्ज करें:</p>
+
+    <input id="name" placeholder="आपका नाम"><br><br>
 
     <canvas id="sigCanvas"></canvas>
 
     <button class="clear-btn" onclick="clearSig()">Clear</button><br>
     <button class="submit-btn" onclick="submitPledge()">Submit Pledge</button>
   </div>
-	<footer style="background-color: #f2f2f2; color: #333; text-align: center; padding: 15px 10px; font-size: 14px; border-top: 1px solid #ddd;">
-  <p>Content Owned by District Administration</p>
-  <p>© District Administration Champawat - Uttarakhand | Developed and Hosted by 
-    <a href="https://champawat.nic.in" target="_blank" style="color: #0066cc; text-decoration: none;">
-      National Informatics Centre
-    </a>, Ministry of Electronics & Information Technology, Government of India
-  </p>
-</footer>
+
+  <footer>
+    <p>Content Owned by District Administration</p>
+    <p>© District Administration Champawat - Uttarakhand | Developed and Hosted by 
+      <a href="https://champawat.nic.in" target="_blank">National Informatics Centre</a>, 
+      Ministry of Electronics & Information Technology, Government of India
+    </p>
+  </footer>
+
   <script>
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDPvaLXBbvlRYJjqptWxC6A_4fVrl1p0RA",
+      authDomain: "anbchmp.firebaseapp.com",
+      databaseURL: "https://anbchmp-default-rtdb.firebaseio.com",
+      projectId: "anbchmp",
+      storageBucket: "anbchmp.firebasestorage.app",
+      messagingSenderId: "291570744735",
+      appId: "1:291570744735:web:b18162c17aa4f4b26f51aa",
+      measurementId: "G-HYCSJL8YCL"
+    };
 
-	
-// Firebase Configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyDPvaLXBbvlRYJjqptWxC6A_4fVrl1p0RA",
-  authDomain: "anbchmp.firebaseapp.com",
-  databaseURL: "https://anbchmp-default-rtdb.firebaseio.com",
-  projectId: "anbchmp",
-  storageBucket: "anbchmp.firebasestorage.app",
-  messagingSenderId: "291570744735",
-  appId: "1:291570744735:web:b18162c17aa4f4b26f51aa",
-  measurementId: "G-HYCSJL8YCL"
-};
-
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
     const canvas = document.getElementById("sigCanvas");
     const ctx = canvas.getContext("2d");
     let drawing = false;
 
-    // Adjust for screen size
     function resizeCanvas() {
       const data = canvas.toDataURL();
       canvas.width = canvas.offsetWidth;
@@ -134,23 +211,15 @@ const db = firebase.database();
     window.addEventListener("resize", resizeCanvas);
     resizeCanvas();
 
-    // Helper for getting correct position (for both touch and mouse)
     function getPos(e) {
       const rect = canvas.getBoundingClientRect();
       if (e.touches && e.touches[0]) {
-        return {
-          x: e.touches[0].clientX - rect.left,
-          y: e.touches[0].clientY - rect.top
-        };
+        return { x: e.touches[0].clientX - rect.left, y: e.touches[0].clientY - rect.top };
       } else {
-        return {
-          x: e.clientX - rect.left,
-          y: e.clientY - rect.top
-        };
+        return { x: e.clientX - rect.left, y: e.clientY - rect.top };
       }
     }
 
-    // Drawing logic
     function startDraw(e) {
       e.preventDefault();
       drawing = true;
@@ -176,12 +245,10 @@ const db = firebase.database();
       ctx.beginPath();
     }
 
-    // Mouse events
     canvas.addEventListener("mousedown", startDraw);
     canvas.addEventListener("mousemove", draw);
     canvas.addEventListener("mouseup", endDraw);
 
-    // Touch events
     canvas.addEventListener("touchstart", startDraw);
     canvas.addEventListener("touchmove", draw);
     canvas.addEventListener("touchend", endDraw);
@@ -200,24 +267,23 @@ const db = firebase.database();
     function submitPledge() {
       const name = document.getElementById("name").value.trim();
       if (!name) {
-        alert("⚠️ Please enter your name.");
+        alert("⚠️ कृपया अपना नाम दर्ज करें।");
         return;
       }
       if (isCanvasBlank(canvas)) {
-        alert("⚠️ Please provide your signature before submitting.");
+        alert("⚠️ कृपया हस्ताक्षर करें।");
         return;
       }
 
       const sigData = canvas.toDataURL();
 
-      // Push to Firebase (ensure firebase.js is configured)
       db.ref("pledges").push({
         name,
         signature: sigData,
         time: Date.now()
       });
 
-      alert("✅ Thank you for your digital pledge!");
+      alert("✅ आपका डिजिटल संकल्प सफलतापूर्वक दर्ज हो गया है!");
       clearSig();
       document.getElementById("name").value = "";
     }
