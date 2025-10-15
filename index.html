@@ -130,6 +130,34 @@
       color: #0066cc;
       text-decoration: none;
     }
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+  background-color: white;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 400px;
+  border-radius: 10px;
+  text-align: center;
+  color: #000;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+}
 
     /* Responsive adjustments */
     @media (max-width: 600px) {
@@ -147,6 +175,13 @@
 </head>
 
 <body>
+  <div id="customAlert" style="display: none;" class="modal">
+  <div class="modal-content">
+    <span id="closeModal" class="close">&times;</span>
+    <p id="customAlertMessage"></p>
+  </div>
+</div>
+
   <!-- HEADER WITH LEFT LOGO AND CENTERED TEXT -->
   <header>
     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Seal_of_Uttarakhand.svg/492px-Seal_of_Uttarakhand.svg.png?20220920040554" alt="District Logo">
@@ -183,6 +218,22 @@
   </footer>
 
   <script>
+    function showCustomAlert(message) {
+  document.getElementById("customAlertMessage").innerText = message;
+  document.getElementById("customAlert").style.display = "block";
+}
+
+document.getElementById("closeModal").onclick = function() {
+  document.getElementById("customAlert").style.display = "none";
+}
+
+window.onclick = function(event) {
+  const modal = document.getElementById("customAlert");
+  if (event.target === modal) {
+    modal.style.display = "none";
+  }
+}
+
     // Firebase Configuration
     const firebaseConfig = {
       apiKey: "AIzaSyDPvaLXBbvlRYJjqptWxC6A_4fVrl1p0RA",
@@ -269,11 +320,11 @@
     function submitPledge() {
       const name = document.getElementById("name").value.trim();
       if (!name) {
-        alert("⚠️ कृपया अपना नाम दर्ज करें।");
+        showCustomAlert("⚠️ कृपया अपना नाम दर्ज करें।");
         return;
       }
       if (isCanvasBlank(canvas)) {
-        alert("⚠️ कृपया हस्ताक्षर करें।");
+        showCustomAlert("⚠️ कृपया हस्ताक्षर करें।");
         return;
       }
 
@@ -285,7 +336,7 @@
         time: Date.now()
       });
 
-      alert("✅ आपका डिजिटल संकल्प सफलतापूर्वक दर्ज हो गया है!");
+      showCustomAlert("✅ आपका डिजिटल संकल्प सफलतापूर्वक दर्ज हो गया है!");
       clearSig();
       document.getElementById("name").value = "";
     }
