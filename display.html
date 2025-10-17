@@ -1,34 +1,274 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
   <meta charset="UTF-8" />
-  <title>Digital Pledge Wall Display</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>डिजिटल संकल्प दीवार</title>
+
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-  <script src="firebase.js"></script>
-</head>
-<body style="background:#000; color:#0ff; font-family:sans-serif; overflow:hidden;">
-  <h1 style="text-align:center; color:#0ff;">Digital Pledge Wall</h1>
-  <div id="pledges" style="text-align:center; font-size:22px;"></div>
-
   <script>
-    const pledgesDiv = document.getElementById("pledges");
-
-    db.ref("pledges").on("child_added", snap => {
-      const data = snap.val();
-      const div = document.createElement("div");
-      div.style.margin = "10px";
-      div.style.animation = "fadeIn 1s ease-out";
-      div.innerHTML = `<strong>${data.name}</strong> has pledged!`;
-      pledgesDiv.prepend(div);
-    });
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDPvaLXBbvlRYJjqptWxC6A_4fVrl1p0RA",
+      authDomain: "anbchmp.firebaseapp.com",
+      databaseURL: "https://anbchmp-default-rtdb.firebaseio.com",
+      projectId: "anbchmp",
+      storageBucket: "anbchmp.firebasestorage.app",
+      messagingSenderId: "291570744735",
+      appId: "1:291570744735:web:b18162c17aa4f4b26f51aa",
+      measurementId: "G-HYCSJL8YCL"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
   </script>
 
   <style>
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      color: #ffffff;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
+	/* ===== HEADER ===== */
+    header {
+      background-color: #3593f2;
+      color: white;
+      padding: 15px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      text-align: center;
+    }
+
+    header img {
+      height: 85px;
+      width: auto;
+      margin-right: 15px;
+    }
+
+    .header-text {
+      text-align: left;
+    }
+
+    .header-text h1 {
+      font-size: 14px;
+      margin: 5px 0;
+      font-weight: 600;
+    }
+
+    .header-text p {
+      margin: 0;
+      font-size: 10px;
+    }
+
+
+    .main-container {
+      flex: 1;
+      display: flex;
+      height: calc(100% - 60px);
+    }
+
+    .pledge-text {
+      flex: 1;
+      padding: 25px;
+      border-right: 2px solid #c0c0c0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      line-height: 1.6;
+      text-align: center;
+      background: #ffffff;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+    }
+
+    #pledges {
+      flex: 2;
+      display: flex;
+      flex-wrap: wrap;
+
+      justify-content: center;
+      align-items: flex-start;
+      padding: 20px;
+      overflow-y: auto;
+      gap: 20px;
+      background: #ffffff;
+    }
+
+    .pledge-card {
+      background: #f0f8ff;
+      border: 1px solid #c0c0c0;
+      border-radius: 8px;
+      padding: 15px 20px;
+      min-width: 220px;
+      max-width: 250px;
+      text-align: center;
+      font-size: 16px;
+      box-shadow: 1px 1px 4px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+    }
+
+    .pledge-card:hover {
+      transform: scale(1.02);
+      box-shadow: 2px 2px 10px rgba(0,0,0,0.15);
+    }
+
+    .pledge-name {
+      font-weight: bold;
+      font-size: 18px;
+      color: #0055a4;
+      margin-bottom: 8px;
+    }
+
+    .pledge-time {
+      font-size: 13px;
+      color: #666;
+    }
+
+    .pledge-signature {
+      margin: 10px 0;
+    }
+
+    .pledge-signature img {
+      width: 100%;
+      max-width: 200px;
+      height: auto;
+      border-radius: 5px;
+      border: 1px solid #c0c0c0;
+    }
+.first-pledge-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+.container2 {
+    display: flex;
+    align-items: center; /* Vertically align image and text */
+    gap: 20px; /* Optional: space between image and text */
+}
+
+.first-pledge-container .pledge-card {
+  max-width: 300px;
+  width: 100%;
+  background-color: #ffffff;
+  border: 2px solid #007acc;
+}
+
+  /* ===== FOOTER ===== */
+    footer {
+      background-color: #f2f2f2;
+      color: #333;
+      text-align: center;
+      padding: 15px 10px;
+      font-size: 14px;
+      border-top: 1px solid #ddd;
+    }
+
+    footer a {
+      color: #0066cc;
+      text-decoration: none;
+    }
+    @media (max-width: 800px) {
+      .main-container {
+        flex-direction: column;
+      }
+      .pledge-text {
+        border-right: none;
+        border-bottom: 2px solid #c0c0c0;
+        font-size: 1rem;
+      }
+    }
+
+    #pledges::-webkit-scrollbar {
+      width: 6px;
+    }
+    #pledges::-webkit-scrollbar-thumb {
+      background: #c0c0c0;
+      border-radius: 3px;
+    }
+  /* Responsive adjustments */
+    @media (max-width: 600px) {
+      header {
+        flex-direction: column;
+      }
+      header img {
+        margin: 0 0 10px 0;
+      }
+      .header-text {
+        text-align: center;
+      }
+    }
+
   </style>
+</head>
+<body>
+ <header>
+<div class="container2">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Seal_of_Uttarakhand.svg/492px-Seal_of_Uttarakhand.svg.png?20220920040554" alt="District Logo">
+    <div class="header-text">
+      <h1>डिजिटल संकल्प दीवार</h1>
+    </div>
+</div>
+
+	<h4 style="font-size: 16px;">
+     मैं संकल्प लेता हूँ कि आत्मनिर्भर भारत के निर्माण में,
+नशामुक्त, स्वच्छ और जल-संरक्षित समाज की स्थापना हेतु,
+तन, मन और कर्म से अपना योगदान दूँगा।
+आदर्श चंपावत के निर्माण और सशक्त उत्तराखंड के निर्माण में एक जिम्मेदार नागरिक के रूप में सदैव सक्रिय रहूँगा।
+    </h4>
+
+  </header>
+    <img src="C:\Users\NIC CHAMPAWAT\Downloads\IMG-20251014-WA0003.jpg" alt="Local Image" style="height: 30%;width: auto; ">
+	
+</br></br>
+  <div style="width: 100%;">
+  <div id="first-pledge" class="first-pledge-container"></div>
+  <div id="pledges"></div>
+</div>
+  
+  <script>
+    const pledgesDiv = document.getElementById("pledges");
+
+    function formatTime(ts) {
+      const d = new Date(ts);
+      return d.toLocaleString();
+    }
+
+    let firstCardAdded = false;
+const firstPledgeDiv = document.getElementById("first-pledge");
+
+db.ref("pledges").on("child_added", snap => {
+  const data = snap.val();
+  const card = document.createElement("div");
+  card.className = "pledge-card";
+  card.innerHTML = `
+    <div class="pledge-name">${data.name}</div>
+    <div class="pledge-signature">
+      <img src="${data.signature}" alt="Signature of ${data.name}">
+    </div>
+    <div class="pledge-time">${formatTime(data.time)}</div>
+  `;
+
+  if (!firstCardAdded) {
+    firstPledgeDiv.appendChild(card);
+    firstCardAdded = true;
+  } else {
+    pledgesDiv.prepend(card);
+  }
+});
+
+  </script>
+  <footer>
+    <p>Content Owned by District Administration</p>
+    <p>© District Administration Champawat - Uttarakhand | Developed and Hosted by 
+      <a href="https://champawat.nic.in" target="_blank">Champawat District</a>
+    </p>
+  </footer>
 </body>
 </html>
